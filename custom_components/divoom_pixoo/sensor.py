@@ -165,6 +165,11 @@ class Pixoo64(Entity):
             pixoo.set_clock(page['id'])
         elif page_type == "gif":
             pixoo.play_gif(page['gif_url'])
+        elif page_type == "gif_saved":
+            gif_file = None
+            if "gif_file" in page: 
+                gif_file = page["gif_file"]
+            pixoo.save_play_gif(page['gif_url'], gif_file)
         elif page_type in ["custom", "components"]:
             variables = page.get('variables', {})
             rendered_variables = {}
