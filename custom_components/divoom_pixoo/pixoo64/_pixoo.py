@@ -377,7 +377,7 @@ class Pixoo:
     def save_play_gif(self, gif_url:str, gif_file = None):
         if gif_file is None:
             gif_file =  str(hex(hash(gif_url)))
-        gif_file += "/hacs_gif/"
+        gif_file = "/hacs_gif/" + gif_file
         key = f'{gif_url}@{gif_file}'
         if key not in self.saved_gifs: 
             response = requests.post(self.__url, json.dumps({
