@@ -90,6 +90,9 @@ class Pixoo:
         # Retrieve the counter
         self.__load_counter()
 
+        # Track which gifs we alredy downloaded and saved
+        self.saved_gifs = set()
+
         # Resetting if needed
         if self.refresh_connection_automatically and self.__counter > self.__refresh_counter_limit:
             self.__reset_counter()
@@ -366,6 +369,30 @@ class Pixoo:
             'Command': 'Device/PlayTFGif',
             'FileType': 2,
             'FileName': gif_url
+        }), timeout=self.timeout)
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def save_play_gif(self, gif_url:str, gif_file = None):
+        if gif_file is None:
+            gif_file =  str(hex(hash(gif_url)))
+        gif_file += "/hacs_gif/"
+        key = f'{gif_url}@{gif_file}'
+        if key not in self.saved_gifs: 
+            response = requests.post(self.__url, json.dumps({
+                "Command":"Device/SaveTFGif",
+                "NetName":gif_url,
+                "LocalName":gif_file
+            }), timeout=self.timeout)
+            self.saved_gifs.add(key)
+            data = response.json()
+            if data['error_code'] != 0:
+                self.__error(data)
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/PlayTFGif',
+            'FileType': 0,
+            'FileName': gif_file 
         }), timeout=self.timeout)
         data = response.json()
         if data['error_code'] != 0:
